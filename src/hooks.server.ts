@@ -22,8 +22,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     auth: {
       persistSession: false,
       detectSessionInUrl: false,
-      autoRefreshToken: false,
-      flowType: 'pkce'
+      autoRefreshToken: false
     },
     global: {
       headers: {
@@ -35,7 +34,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   };
 
   // Initialize Supabase client
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, options);
 
   // Attach Supabase client to locals
   event.locals.supabase = supabase;
