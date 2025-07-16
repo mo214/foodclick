@@ -14,9 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     {
       auth: {
         persistSession: true,
-        detectSessionInUrl: true,
-        // ✅ This is the key — use the cookie from the request
-      
+        detectSessionInUrl: false
       }
     }
   );
