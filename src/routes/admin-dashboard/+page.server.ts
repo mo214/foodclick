@@ -1,27 +1,31 @@
-// src/hooks.server.ts
-import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
-import type { Handle } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { redirect, error as svelteKitError } from '@sveltejs/kit';
+import type { ServerLoad } from '@sveltejs/kit';
 
-export const handle: Handle = async ({ event, resolve }) => {
-  // Create Supabase client with server-aware cookie/session handling
-  event.locals.supabase = createSupabaseServerClient({
-    supabaseUrl: env.SUPABASE_URL,
-    supabaseKey: env.SUPABASE_ANON_KEY,
-    event
-  });
+export const load: ServerLoad = async ({ locals }: Parameters<ServerLoad>[0]) => {
+  const { data: { user }, error } = await locals.supabase.auth.getUser();
 
-  // Continue processing the request
-  const response = await resolve(event, {
-    filterSerializedResponseHeaders(name) {
-      return name.toLowerCase().startsWith('x-supabase-');
-    }
-  });
+  if (error || !user) {
+    console.log('Redirecting to /login because user is missing or error occurred');
+    throw redirect(303, '/login');
+  }
 
-  // Add extra security headers (optional)
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (!user.user_metadata?.is_admin_super) {
+    throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
+  }
 
-  return response;
+  const { data: restaurants, error: restaurantsError } = await locals.supabase
+    .from('dummy_restaurant')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (restaurantsError) {
+    console.error('Error loading restaurants:', restaurantsError.message);
+    throw svelteKitError(500, 'Failed to load restaurants');
+  }
+
+  return {
+    user,
+    restaurants: restaurants ?? [],
+    isMasterAdmin: true
+  };
 };
