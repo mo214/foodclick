@@ -20,9 +20,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   // Supabase client configuration
   const options = {
     auth: {
-      persistSession: false,
-      detectSessionInUrl: false,
-      autoRefreshToken: false
+      persistSession: true,
+      detectSessionInUrl: true,
+      autoRefreshToken: true
     },
     global: {
       headers: {
