@@ -13,8 +13,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     env.SUPABASE_ANON_KEY,
     {
       auth: {
-        persistSession: false,
-        detectSessionInUrl: false,
+        persistSession: true,
+        detectSessionInUrl: true,
         // ✅ This is the key — use the cookie from the request
       
       }
