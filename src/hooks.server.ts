@@ -1,3 +1,4 @@
+// src/hooks.server.ts
 import type { Handle } from '@sveltejs/kit';
 import { createClient, type Session } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
@@ -13,10 +14,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     env.SUPABASE_ANON_KEY,
     {
       auth: {
-        persistSession: false,
-        detectSessionInUrl: false,
-        // ✅ This is the key — use the cookie from the request
-      
+        persistSession: true,
+        detectSessionInUrl: false
       }
     }
   );
