@@ -9,8 +9,8 @@ export const load: ServerLoad = async ({ locals }: Parameters<ServerLoad>[0]) =>
     throw redirect(303,'/login');
     
   }
-  const userRole = session.user.app_metadata?.role;
-  if (userRole !== 'master_admin') {
+  const userId = session.user.id;
+  if (userId !== '2c4adab1-ccd9-4827-97ae-0175eca430f6') {
     throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
   }
 
