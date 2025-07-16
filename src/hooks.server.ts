@@ -2,29 +2,11 @@
 import type { Handle } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
-// Alias for clarity:
+// Alias for clarity (still good practice for internal use in this file):
 import type { Session as SupabaseSession, SupabaseClient, User as SupabaseUser } from '@supabase/supabase-js';
 
-// --- Start of Corrected Changes ---
-
-// 1. Define your custom AppSession interface
-// This represents the shape of the object you want event.locals.getSession to return.
-export interface AppSession {
-  // The 'session' property will hold the original Supabase Session object, or null.
-  session: SupabaseSession | null;
-  // The 'user' property will hold the Supabase User object, or null.
-  user: SupabaseUser | null;
-}
-
-// 2. Update your Locals interface to use AppSession for getSession's return type
-export interface Locals {
-  supabase: SupabaseClient;
-  // This is the key change:
-  getSession: () => Promise<AppSession | null>; // <--- Use AppSession here!
-}
-
-// --- End of Corrected Changes ---
-
+// Since App.Locals is fixed in app.d.ts, we no longer define AppSession or Locals here.
+// We only need the types for internal use within this file.
 
 export const handle: Handle = async ({ event, resolve }) => {
   // Validate environment variables
@@ -53,30 +35,25 @@ export const handle: Handle = async ({ event, resolve }) => {
   };
 
   // Initialize Supabase client
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, options);
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
   // Attach Supabase client to locals
   event.locals.supabase = supabase;
 
-  // --- Corrected getSession definition ---
-  // The type annotation for the function matches the Locals interface
-  event.locals.getSession = async (): Promise<AppSession | null> => {
+  // --- Crucial Change Here: Match the return type to what app.d.ts expects ---
+  // app.d.ts expects: () => Promise<Session | null>
+  event.locals.getSession = async (): Promise<SupabaseSession | null> => { // Use SupabaseSession here
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) throw error;
-
-      // Construct and return the AppSession object
-      return {
-        session: session, // This will be SupabaseSession | null
-        user: session?.user ?? null // This will be SupabaseUser | null
-      };
+      // You MUST return the raw Supabase Session object here, or null.
+      // You cannot return your custom { session, user } object here
+      // because app.d.ts says it should be a Supabase Session.
+      return session;
     } catch (error) {
-      console.error('Error getting safe session:', error);
-      // On error, return an AppSession where both properties are null
-      return {
-        session: null,
-        user: null
-      };
+      console.error('Error getting session:', error);
+      // On error, return null, as expected by app.d.ts
+      return null;
     }
   };
 
