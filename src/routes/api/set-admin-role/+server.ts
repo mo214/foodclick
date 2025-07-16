@@ -8,17 +8,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   if (!session) throw svelteKitError(401, 'Unauthorized');
 
   // Only allow users who are already master_admin
-  const userRole = session.user.app_metadata?.role;
-  if (userRole !== 'master_admin') {
+  const userId = session.user.id;
+  if (userId !== '2c4adab1-ccd9-4827-97ae-0175eca430f6') {
     throw svelteKitError(403, 'Forbidden: Only master_admin can assign roles.');
   }
 
-  const { userId } = await request.json();
-  if (!userId) throw svelteKitError(400, 'User ID is required');
+  const { userId: targetUserId } = await request.json();
+  if (!targetUserId) throw svelteKitError(400, 'User ID is required');
 
   const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 
-  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(targetUserId, {
     app_metadata: { role: 'master_admin' }
   });
 
