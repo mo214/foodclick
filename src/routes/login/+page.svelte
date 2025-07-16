@@ -38,6 +38,7 @@
 
       // Redirect to intended page or dashboard
       const redirectTo = $page.url.searchParams.get('redirectTo') || '/admin-dashboard';
+      console.log('login successful');
       await goto(redirectTo);
 
     } catch (err) {
