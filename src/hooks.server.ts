@@ -1,17 +1,13 @@
-// src/hooks.server.ts
 import type { Handle } from '@sveltejs/kit';
-import { createClient, type SupabaseClient, type Session } from '@supabase/supabase-js';
+import { createClient, type Session } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 
 export interface Locals {
-  supabase: SupabaseClient<any, 'public', any>;
+  supabase: ReturnType<typeof createClient>;
   getSession: () => Promise<Session | null>;
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const cookie = event.request.headers.get('cookie') ?? '';
-
-  // Create Supabase client scoped to this request with cookie
   const supabase = createClient(
     env.SUPABASE_URL,
     env.SUPABASE_ANON_KEY,
@@ -19,17 +15,18 @@ export const handle: Handle = async ({ event, resolve }) => {
       auth: {
         persistSession: false,
         detectSessionInUrl: false,
-        headers: {
-          cookie
-        }
+        // ✅ This is the key — use the cookie from the request
+      
       }
     }
   );
 
+  // Attach the Supabase client to locals
   event.locals.supabase = supabase;
 
-  event.locals.getSession = async (): Promise<Session | null> => {
-    const { data } = await supabase.auth.getSession();
+  // Provide a helper for getting the session
+  event.locals.getSession = async () => {
+    const { data, error } = await supabase.auth.getSession();
     return data.session;
   };
 

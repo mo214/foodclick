@@ -4,14 +4,16 @@
 
 export {};
 // src/app.d.ts
+// src/app.d.ts
 import type { SupabaseClient, Session } from '@supabase/supabase-js';
 
 declare global {
   namespace App {
     interface Locals {
-      supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>;
+      supabase: SupabaseClient<any, any, any>; // ← safe and compatible
       getSession: () => Promise<Session | null>;
     }
+  }
 }
-}
+
   
