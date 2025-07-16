@@ -9,7 +9,7 @@ export const load: ServerLoad = async ({ locals }: Parameters<ServerLoad>[0]) =>
     throw redirect(303, '/login');
   }
 
-  if (!user.user_metadata?.is_super_admin) {
+  if (!user.user_metadata?.is_admin_super) {
     throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
   }
 

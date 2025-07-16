@@ -20,9 +20,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   // Supabase client configuration
   const options = {
     auth: {
-      persistSession: true,
+      persistSession: false,
       detectSessionInUrl: false,
-      autoRefreshToken: true,
+      autoRefreshToken: false,
       flowType: 'pkce'
     },
     global: {
@@ -40,22 +40,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   // Attach Supabase client to locals
   event.locals.supabase = supabase;
 
-  // --- Crucial Change Here: Match the return type to what app.d.ts expects ---
-  // app.d.ts expects: () => Promise<Session | null>
-  event.locals.getSession = async (): Promise<SupabaseSession | null> => { // Use SupabaseSession here
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      // You MUST return the raw Supabase Session object here, or null.
-      // You cannot return your custom { session, user } object here
-      // because app.d.ts says it should be a Supabase Session.
-      return session;
-    } catch (error) {
-      console.error('Error getting session:', error);
-      // On error, return null, as expected by app.d.ts
-      return null;
-    }
-  };
+  // Removed getSession method as per new requirements
 
   // Handle the request
   try {
