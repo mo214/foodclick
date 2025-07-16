@@ -2,29 +2,29 @@ import { redirect, error as svelteKitError } from '@sveltejs/kit';
 import type { ServerLoad } from '@sveltejs/kit';
 
 export const load: ServerLoad = async ({ locals }: Parameters<ServerLoad>[0]) => {
-  const session = await locals.getSession();
+  const { data: { user }, error } = await locals.supabase.auth.getUser();
 
-  if (!session || !session.user) {
-    console.log('Redirecting to /login because session or user is missing');
-    throw redirect(303,'/login');
+  if (error || !user) {
+    console.log('Redirecting to /login because user is missing or error occurred');
+    throw redirect(303, '/login');
   }
 
-  if (!session.user.user_metadata?.is_super_admin) {
+  if (!user.user_metadata?.is_super_admin) {
     throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
   }
 
-  const { data: restaurants, error } = await locals.supabase
+  const { data: restaurants, error: restaurantsError } = await locals.supabase
     .from('dummy_restaurant')
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Error loading restaurants:', error.message);
+  if (restaurantsError) {
+    console.error('Error loading restaurants:', restaurantsError.message);
     throw svelteKitError(500, 'Failed to load restaurants');
   }
 
   return {
-    user: session.user,
+    user,
     restaurants: restaurants ?? [],
     isMasterAdmin: true
   };
