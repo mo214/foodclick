@@ -8,8 +8,9 @@
 
   // Defensive parsing
   const user = data?.user as User | undefined;
+   const isMasterAdmin = user?.user_metadata?.is_super_admin === true;
+
   const restaurants = (data?.restaurants ?? []) as Restaurant[];
-  const isMasterAdmin = data?.isMasterAdmin ?? false;
 
   let newRestaurantName = '';
   let selectedRestaurant: Restaurant | null = null;
