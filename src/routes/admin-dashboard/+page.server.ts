@@ -5,11 +5,6 @@ import { isSuperAdmin } from '$lib/auth';
 export const load: ServerLoad = async ({ locals }) => {
   const user = locals.user;
 
-  if (!user) {
-    console.log('Redirecting: user not found');
-    throw redirect(303, '/login');
-  }
-
   if (!isSuperAdmin(user)) {
     console.log('Forbidden: Not a super admin', user);
     throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
