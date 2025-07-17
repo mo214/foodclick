@@ -13,6 +13,7 @@ declare global {
       supabase: SupabaseClient<any, any, any>; // ← safe and compatible
       user: User | null;
       session: import('@supabase/supabase-js').Session | null;
+      safeGetSession?: () => Promise<{ session: import('@supabase/supabase-js').Session | null; user: User | null }>;
     }
   }
 }

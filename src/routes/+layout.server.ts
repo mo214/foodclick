@@ -1,8 +1,12 @@
-import type { LayoutServerData } from './$types';
+import type { LayoutServerLoad } from './$types';
 
-export const load = async ({ locals }: { locals: any }): Promise<LayoutServerData | null> => {
-	return {
-		session: locals.session ?? null,
-		user: locals.user ?? null
-	} as unknown as LayoutServerData | null;
+export const load: LayoutServerLoad = async ({ locals, cookies }) => {
+  if (!locals.safeGetSession) {
+    throw new Error('safeGetSession is not defined on locals');
+  }
+  const { session } = await locals.safeGetSession();
+  return {
+    session,
+    cookies: cookies.getAll()
+  };
 };
