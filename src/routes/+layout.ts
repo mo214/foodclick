@@ -1,5 +1,5 @@
-import { SUPABASE_URL } from '$env/static/private';
-import { SUPABASE_ANON_KEY } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import {
 	createBrowserClient,
 	createServerClient,
@@ -11,10 +11,10 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	depends('supabase:auth');
 
 	const supabase = isBrowser()
-		? createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch }
 		  })
-		: createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: { fetch },
 				cookies: {
 					getAll: () => data.cookies
