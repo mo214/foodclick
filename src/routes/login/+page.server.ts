@@ -27,6 +27,6 @@ export const actions: Actions = {
       return fail(403, { error: 'Email not verified. Please verify your email before logging in.' });
     }
 
-    throw redirect(303, '/admin-dashboard');
+    throw redirect(303, '/admin-dashboard'); // fixed path
   }
 };
