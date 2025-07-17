@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabaseClient';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
@@ -29,7 +28,7 @@
         throw new Error('Please enter a valid email address');
       }
 
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await $page.data.supabase.auth.signInWithPassword({
         email: email.trim(),
         password
       });
@@ -37,9 +36,14 @@
       if (authError) throw authError;
 
       // Redirect to intended page or dashboard
-      const redirectTo = $page.url.searchParams.get('redirectTo') || '/admin-dashboard';
-      console.log('login successful');
-      await goto(redirectTo);
+      const { data: { user } } = await $page.data.supabase.auth.getUser();
+      if (user?.raw_user_meta_data?.email_verified && user?.raw_user_meta_data?.is_super_admin) {
+        const redirectTo = $page.url.searchParams.get('redirectTo') || '/admin-dashboard';
+        console.log('login successful');
+        await goto(redirectTo);
+      } else {
+        throw new Error('You do not have permission to access this page.');
+      }
 
     } catch (err) {
       error = err instanceof Error ? err.message : 'Login failed. Please try again.';

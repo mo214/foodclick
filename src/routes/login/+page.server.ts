@@ -30,6 +30,25 @@ export const actions: Actions = {
       return fail(403, { error: 'Email not verified. Please verify your email before logging in.' });
     }
 
+    // Check master_admins table for user metadata
+    const { data: adminData, error: adminError } = await locals.supabase
+      .from('master_admins')
+      .select('raw_user_meta_data')
+      .eq('id', user.id)
+      .single();
+
+    if (adminError || !adminData) {
+      await locals.supabase.auth.signOut();
+      return fail(403, { error: 'Access denied. Admin privileges required.' });
+    }
+
+    const meta = adminData.raw_user_meta_data || {};
+
+    if (meta.email_verified !== true || meta.is_super_admin !== true) {
+      await locals.supabase.auth.signOut();
+      return fail(403, { error: 'Access denied. Admin privileges required.' });
+    }
+
     throw redirect(303, '/admin-dashboard'); // fixed path
   }
 };

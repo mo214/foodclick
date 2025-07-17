@@ -5,8 +5,6 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
     throw new Error('safeGetSession is not defined on locals');
   }
   const { session } = await locals.safeGetSession();
-  return {
-    session,
-    cookies: cookies.getAll()
-  };
+  
+  return { session, cookies };
 };
