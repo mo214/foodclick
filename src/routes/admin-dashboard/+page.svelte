@@ -61,6 +61,7 @@
   function selectRestaurant(restaurant: Restaurant) {
     selectedRestaurant = restaurant;
     menuItemsPromise = loadMenuItems(restaurant.id);
+    alert(`You clicked on: ${restaurant.name}`);
   }
 
   async function loadMenuItems(restaurantId: string): Promise<MenuItem[]> {
