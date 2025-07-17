@@ -1,5 +1,6 @@
 import { redirect, error as svelteKitError } from '@sveltejs/kit';
 import type { ServerLoad } from '@sveltejs/kit';
+import type { User } from '@supabase/supabase-js';
 
 export const load: ServerLoad = async ({ locals }) => {
   const user = locals.user;
@@ -9,10 +10,18 @@ export const load: ServerLoad = async ({ locals }) => {
     throw redirect(303, '/login');
   }
 
-  const isSuperAdmin = user.user_metadata?.is_super_admin === true;
+  interface ExtendedUser extends User {
+  raw_user_meta_data?: {
+    is_super_admin?: boolean;
+    [key: string]: any;
+  };
+}
+
+const extendedUser = user as ExtendedUser;
+const isSuperAdmin = extendedUser.raw_user_meta_data?.is_super_admin === true;
 
   if (!isSuperAdmin) {
-    console.log('Forbidden: Not a super admin', user.user_metadata);
+    console.log('Forbidden: Not a super admin', user);
     throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
   }
 
