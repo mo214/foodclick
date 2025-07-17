@@ -140,12 +140,12 @@
           <h2 class="text-xl font-semibold mb-4">Menu for {selectedRestaurant.name}</h2>
           {#await menuItemsPromise}
             <p>Loading menu...</p>
-          {:then menuItems}
-            {#if menuItems.length === 0}
+          {:then menuItem}
+            {#if menuItem.length === 0}
               <p>No menu items found.</p>
             {:else}
               <ul class="divide-y divide-gray-200">
-                {#each menuItems as item (item.id)}
+                {#each menuItem as item (item.id)}
                   <li class="py-4">
                     <p class="font-semibold">{item.name}</p>
                     <p class="text-sm">Price: {item.price} DKK</p>
