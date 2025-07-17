@@ -35,20 +35,17 @@
 
       if (authError) throw authError;
 
+      const redirectTo = $page.url.searchParams.get('redirectTo') || '/admin-dashboard';
       // Redirect to intended page or dashboard
-      const { data: { user } } = await $page.data.supabase.auth.getUser();
-      if (user?.raw_user_meta_data?.email_verified && user?.raw_user_meta_data?.is_super_admin) {
-        const redirectTo = $page.url.searchParams.get('redirectTo') || '/admin-dashboard';
-        console.log('login successful');
         await goto(redirectTo);
-      } else {
-        throw new Error('You do not have permission to access this page.');
-      }
+      console.log('login successful');
+      await goto(redirectTo);
 
     } catch (err) {
       error = err instanceof Error ? err.message : 'Login failed. Please try again.';
       console.error('Login error:', err);
     } finally {
+
       loading = false;
     }
   };
