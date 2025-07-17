@@ -4,6 +4,8 @@ import type { User } from '@supabase/supabase-js';
 
 export const load: ServerLoad = async ({ locals }) => {
   const user = locals.user;
+  console.log('Load function started');
+  console.log('User from locals:', user);
 
   if (!user) {
     console.log('Redirecting: user not found');
@@ -11,14 +13,17 @@ export const load: ServerLoad = async ({ locals }) => {
   }
 
   interface ExtendedUser extends User {
-  raw_user_meta_data?: {
-    is_super_admin?: boolean;
-    [key: string]: any;
-  };
-}
+    raw_user_meta_data?: {
+      is_super_admin?: boolean;
+      [key: string]: any;
+    };
+  }
 
-const extendedUser = user as ExtendedUser;
-const isSuperAdmin = extendedUser.raw_user_meta_data?.is_super_admin === true;
+  const extendedUser = user as ExtendedUser;
+  console.log('Extended user raw_user_meta_data:', extendedUser.raw_user_meta_data);
+
+  const isSuperAdmin = extendedUser.raw_user_meta_data?.is_super_admin === true;
+  console.log('isSuperAdmin:', isSuperAdmin);
 
   if (!isSuperAdmin) {
     console.log('Forbidden: Not a super admin', user);
@@ -34,6 +39,8 @@ const isSuperAdmin = extendedUser.raw_user_meta_data?.is_super_admin === true;
     console.error('Error loading restaurants:', restaurantsError.message);
     throw svelteKitError(500, 'Failed to load restaurants');
   }
+
+  console.log('Restaurants loaded:', restaurants);
 
   return {
     user,
