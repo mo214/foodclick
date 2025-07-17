@@ -18,7 +18,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (error) console.error('HOOK session error:', error);
 
-	event.locals.session = session;
+	// Ensure session and user are set correctly for all requests
+	event.locals.session = session ?? null;
 	event.locals.user = session?.user ?? null;
 
 	return resolve(event, {
