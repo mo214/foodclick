@@ -29,7 +29,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select('*')
 		.order('created_at', { ascending: false });
 
-	console.log('Fetched menu items:', menuItems, 'Error:', menuItemsError);
+	const { count, error: countError } = await locals.supabase
+		.from('menu_items')
+		.select('id', { count: 'exact', head: true });
+
+	console.log('Fetched menu items:', menuItems, 'Error:', menuItemsError, 'Count:', count, 'Count Error:', countError);
 
 	if (menuItemsError) {
 		console.error('Error fetching menu items:', menuItemsError);
