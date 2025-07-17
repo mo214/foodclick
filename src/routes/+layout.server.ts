@@ -1,19 +1,8 @@
+import type { LayoutServerData } from './$types';
 
-export const load = async ({ locals }: { locals: any }) => {
-  console.log('Load function started');
-  console.log('User from locals:', locals.user);
-
-  if (!locals.user) {
-    console.log('Redirecting: user not found');
-    return {
-      user: null,
-      session: null
-    };
-  }
-
-  return {
-    user: locals.user,
-    session: locals.session
-  };
+export const load = async ({ locals }: { locals: any }): Promise<LayoutServerData | null> => {
+	return {
+		session: locals.session ?? null,
+		user: locals.user ?? null
+	} as unknown as LayoutServerData | null;
 };
-

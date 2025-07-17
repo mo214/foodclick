@@ -21,11 +21,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.session = session;
 	event.locals.user = session?.user ?? null;
 
-	// Add logging for debugging
-	console.log('HOOK: session:', session);
-	console.log('HOOK: user:', event.locals.user);
-
-	// Return the response
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {
 			return name.toLowerCase().startsWith('x-supabase-');
