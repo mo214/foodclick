@@ -2,9 +2,9 @@ import { createServerClient } from '@supabase/ssr'
 import { type Handle, redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public'
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
-const supabase: Handle = async ({ event, resolve }) => {
+const supabaseHandler: Handle = async ({ event, resolve }) => {
   /**
    * Creates a Supabase client specific to this server request.
    *
@@ -38,11 +38,12 @@ const supabase: Handle = async ({ event, resolve }) => {
     if (!session) {
       return { session: null, user: null }
     }
-
+  
     const {
       data: { user },
       error,
     } = await event.locals.supabase.auth.getUser()
+
     if (error) {
       // JWT validation has failed
       return { session: null, user: null }
@@ -62,13 +63,14 @@ const supabase: Handle = async ({ event, resolve }) => {
   })
 }
 
-const authGuard: Handle = async ({ event, resolve }) => {
-  const { session, user } = await event.locals.safeGetSession()
+const authGuardHandler: Handle = async ({ event, resolve }) => {
+  const { session, user } = await event.locals.safeGetSession();
   event.locals.session = session
-  event.locals.user = user
+  event.locals.user = user;
 
-  if (!event.locals.session && event.url.pathname.startsWith('/private')) {
-    redirect(303, '/auth')
+  const protectedPaths = ['/admin-dashboard', '/private']; // Add all protected paths
+  if (protectedPaths.some(path => event.url.pathname.startsWith(path)) && !event.locals.session) {
+    throw redirect(303, '/login');
   }
 
   if (event.locals.session && event.url.pathname === '/auth') {
@@ -78,4 +80,4 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event)
 }
 
-export const handle: Handle = sequence(supabase, authGuard)
+export const handle: Handle = sequence(supabaseHandler, authGuardHandler)

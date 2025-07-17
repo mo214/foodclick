@@ -1,9 +1,10 @@
 import { redirect, error as svelteKitError } from '@sveltejs/kit';
 import type { ServerLoad } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/auth';
+import type { ExtendedUser } from '$lib/auth';
 
 export const load: ServerLoad = async ({ locals }) => {
-  const user = locals.user;
+  const user = locals.user as ExtendedUser | null;
 
   if (!isSuperAdmin(user)) {
     console.log('Forbidden: Not a super admin', user);
