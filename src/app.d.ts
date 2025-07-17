@@ -2,15 +2,16 @@
 // for information about these interfaces
 
 
-export {};
-// src/app.d.ts
-// src/app.d.ts
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 
 declare global {
   namespace App {
     interface Locals {
-      supabase: SupabaseClient<any, any, any>; // ← safe and compatible
+      supabase: SupabaseClient<any, any, any>;
+      session: Session | null;
+      user: User | null;
     }
   }
 }
+
+export {}; // keep this at the bottom

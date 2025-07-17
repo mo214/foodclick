@@ -2,9 +2,9 @@ import { redirect, error as svelteKitError } from '@sveltejs/kit';
 import type { ServerLoad } from '@sveltejs/kit';
 
 export const load: ServerLoad = async ({ locals }) => {
-  const { data: { user }, error } = await locals.supabase.auth.getUser();
+  const user = locals.user;
 
-  if (error || !user) {
+  if (!user) {
     console.log('Redirecting: user not found');
     throw redirect(303, '/login');
   }
@@ -16,7 +16,6 @@ export const load: ServerLoad = async ({ locals }) => {
     throw svelteKitError(403, 'Forbidden: You do not have access to this page.');
   }
 
-  // (optional) load some data
   const { data: restaurants, error: restaurantsError } = await locals.supabase
     .from('dummy_restaurant')
     .select('*')
@@ -33,4 +32,3 @@ export const load: ServerLoad = async ({ locals }) => {
     isSuperAdmin: true
   };
 };
-
