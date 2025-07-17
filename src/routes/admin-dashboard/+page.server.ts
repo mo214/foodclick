@@ -27,6 +27,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from('menu_items')
 		.select('*')
 		.order('created_at', { ascending: false });
+		console.log('Menu items:', menuItems);
 
 	if (menuItemsError) {
 		console.error('Error fetching menu items:', menuItemsError);
