@@ -3,7 +3,7 @@ import { type Handle } from '@sveltejs/kit'
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public'
 
 const supabase: Handle = async ({ event, resolve }) => {
-  /**
+   /**
    * Creates a Supabase client specific to this server request.
    *
    * The Supabase client gets the Auth token from the request cookies.
@@ -55,3 +55,5 @@ const supabase: Handle = async ({ event, resolve }) => {
     },
   });
 }
+
+export const handle: Handle = supabase;
