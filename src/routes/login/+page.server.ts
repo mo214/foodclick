@@ -16,6 +16,9 @@ export const actions: Actions = {
       password
     });
 
+    // See the session and user data from Supabase after login
+    console.log('Supabase login response:', { data, error });
+
     if (error || !data.session) {
       return fail(400, { error: error?.message ?? 'Login failed' });
     }

@@ -6,6 +6,9 @@
 
   export let data;
 
+  // See what data is passed to the page from your load function
+  console.log('Data available on /admin-dashboard:', data);
+
   // Defensive parsing
   const user = data?.user as User | undefined;
    const isMasterAdmin = user?.user_metadata?.is_super_admin === true;
