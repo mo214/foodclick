@@ -1,10 +1,9 @@
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, cookies }) => {
-  if (!locals.safeGetSession) {
-    throw new Error('safeGetSession is not defined on locals');
-  }
+  // safeGetSession is now available from the hook
   const { session } = await locals.safeGetSession();
   
-  return { session, cookies };
+  // Return cookies as a serializable array for the client-side load function
+  return { session, cookies: cookies.getAll() };
 };
