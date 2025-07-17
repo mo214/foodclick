@@ -28,10 +28,12 @@
         throw new Error('Please enter a valid email address');
       }
 
-      const { error: authError } = await $page.data.supabase.auth.signInWithPassword({
+      const { data, error: authError } = await $page.data.supabase.auth.signInWithPassword({
         email: email.trim(),
         password
       });
+      
+      if (authError || !data?.user) throw authError || new Error("User data missing after login");
 
       if (authError) throw authError;
 
@@ -41,7 +43,7 @@
       console.log('login successful');
       await goto(redirectTo);
 
-    } catch (err) {
+      } catch (err) {
       error = err instanceof Error ? err.message : 'Login failed. Please try again.';
       console.error('Login error:', err);
     } finally {
