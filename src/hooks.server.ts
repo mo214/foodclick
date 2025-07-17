@@ -18,6 +18,8 @@ export const handle: Handle = async ({ event, resolve }) => {
   const {
     data: { session },
   } = await supabase.auth.getSession();
+   console.log('HOOK: session:', session);
+  console.log('HOOK: error:', Error);
 
   // Optional: attach session and user to locals
   event.locals.session = session;
