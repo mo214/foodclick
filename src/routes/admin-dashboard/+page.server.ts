@@ -1,8 +1,9 @@
 import { error as svelteKitError, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
+
 export const load: PageServerLoad = async ({ locals }) => {
-	const { session } = await locals.safeGetSession();
+	const { session, user } = await locals.safeGetSession();
 
 	// Protect the route. If the user is not logged in, redirect them to the login page.
 	if (!session) {
@@ -27,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from('menu_items')
 		.select('*')
 		.order('created_at', { ascending: false });
-		console.log('Menu items:', menuItems);
+		
 
 	if (menuItemsError) {
 		console.error('Error fetching menu items:', menuItemsError);
@@ -37,6 +38,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Make the restaurants and menu items data available to the +page.svelte component.
 	return {
 		restaurants: restaurants ?? [],
-		menuItems: menuItems ?? []
+		menuItems: menuItems ?? [], 
+		user
 	};
 };

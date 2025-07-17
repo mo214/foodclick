@@ -91,7 +91,7 @@
   }
 </script>
 
-{#if user && isMasterAdmin}
+{#if data.user && isMasterAdmin}
   <div class="min-h-screen flex bg-gray-100">
     <aside class="w-72 bg-white p-6 shadow">
       <h2 class="text-2xl font-semibold mb-4">Master Admin</h2>
