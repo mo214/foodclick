@@ -1,6 +1,6 @@
 
 import { json, error as svelteKitError } from '@sveltejs/kit';
-import jwt from 'jsonwebtoken';
+import jsonwebtoken from 'jsonwebtoken';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 
@@ -36,7 +36,7 @@ export async function POST(event: RequestEvent) {
 
   // Create a JWT token with "role": "master_admin" claim
   try {
-    const token = jwt.sign(
+    const token = jsonwebtoken.sign(
       {
         role: 'master_admin',
         sub: userId,
