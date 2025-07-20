@@ -22,7 +22,7 @@ export async function POST(event: RequestEvent) {
 
   // Optionally: Only allow certain emails or user IDs to assign admin role
   // For example, restrict to your own email
-  if (session.user.email !== 'your-admin-email@example.com') {
+  if (session.user.email !== 'mohammed_500@outloo.dk') {
     return json({ error: 'Forbidden: Not allowed to assign admin role' }, { status: 403 });
   }
 
