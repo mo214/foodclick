@@ -77,6 +77,11 @@
       ? `${result.message} Please log out and log back in.`
       : `Failed: ${result.error}`;
   }
+
+
+
+
+
 </script>
 
 {#if data.user && isMasterAdmin}
@@ -122,8 +127,11 @@
           </ul>
         {/if}
       </section>
+     
+     
+ 
 
-      {#if selectedRestaurant}
+    {#if selectedRestaurant}
         <section class="bg-white p-6 shadow rounded-xl max-w-4xl mt-10">
           <h2 class="text-xl font-semibold mb-4">Menu for {selectedRestaurant.name}</h2>
           {#if selectedMenuItems.length === 0}

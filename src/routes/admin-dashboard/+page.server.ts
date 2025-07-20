@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: restaurants, error: restaurantsError } = await locals.supabase
 		.from('dummy_restaurant')
 		.select('*')
-		.order('created_at', { ascending: false });
+		//.order('created_at', { ascending: false });
 
 	if (restaurantsError) {
 		console.error('Error fetching restaurants:', restaurantsError);
@@ -34,7 +34,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		console.error('Error fetching menu items:', menuItemsError);
 		throw svelteKitError(500, 'Failed to load menu items. You may not have the required permissions.');
 	}
-
+	
+	
 	// Make the restaurants and menu items data available to the +page.svelte component.
 	return {
 		restaurants: restaurants ?? [],
