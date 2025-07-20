@@ -13,10 +13,10 @@
   const allMenuItems = (data?.menuItems ?? []) as MenuItem[];
 
   let newRestaurantName = '';
-  let selectedRestaurant: Restaurant []=[];
+  let selectedRestaurant: Restaurant | null = null;
   let selectedMenuItems: MenuItem[] = [];
   let roleAssignmentMessage = '';
-  let loading = false;
+  let loading = true;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
