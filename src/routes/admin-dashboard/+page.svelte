@@ -16,7 +16,7 @@
   let selectedRestaurant: Restaurant | null = null;
   let selectedMenuItems: MenuItem[] = [];
   let roleAssignmentMessage = '';
-  let loading = true;
+  let loading = false;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
