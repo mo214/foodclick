@@ -23,27 +23,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw svelteKitError(500, 'Failed to load restaurants. You may not have the required permissions.');
 	}
 
-	// Fetch menu items from the 'menu_items' table.
-	const { data: menuItems, error: menuItemsError } = await locals.supabase
-		.from('menu_items')
-		.select('*')
-		.order('created_at', { ascending: false });
-
-	const { count, error: countError } = await locals.supabase
-		.from('menu_items')
-		.select('id', { count: 'exact', head: true });
-
-	console.log('Fetched menu items:', menuItems, 'Error:', menuItemsError, 'Count:', count, 'Count Error:', countError);
-
-	if (menuItemsError) {
-		console.error('Error fetching menu items:', menuItemsError);
-		throw svelteKitError(500, 'Failed to load menu items. You may not have the required permissions.');
-	}
-
-	// Make the restaurants and menu items data available to the +page.svelte component.
+	// Make the restaurants data available to the +page.svelte component.
 	return {
 		restaurants: restaurants ?? [],
-		menuItems: menuItems ?? [], 
 		user
 	};
 };
