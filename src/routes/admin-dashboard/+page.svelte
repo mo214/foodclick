@@ -6,17 +6,15 @@
 
   export let data;
 
-  // See what data is passed to the page from your load function
- 
   // Defensive parsing
   const user = data?.user as User | undefined;
-   const isMasterAdmin = user?.user_metadata?.is_super_admin === true;
-
+  const isMasterAdmin = user?.user_metadata?.is_super_admin === true;
   const restaurants = (data?.restaurants ?? []) as Restaurant[];
+  const allMenuItems = (data?.menuItems ?? []) as MenuItem[];
 
   let newRestaurantName = '';
   let selectedRestaurant: Restaurant | null = null;
-  let menuItemsPromise: Promise<MenuItem[]> = Promise.resolve([]);
+  let selectedMenuItems: MenuItem[] = [];
   let roleAssignmentMessage = '';
   let loading = false;
 
@@ -52,7 +50,7 @@
     if (!error) {
       if (selectedRestaurant?.id === id) {
         selectedRestaurant = null;
-        menuItemsPromise = Promise.resolve([]);
+        selectedMenuItems = [];
       }
       await invalidateAll();
     }
@@ -60,18 +58,8 @@
 
   function selectRestaurant(restaurant: Restaurant) {
     selectedRestaurant = restaurant;
-    menuItemsPromise = loadMenuItems(restaurant.id);
+    selectedMenuItems = allMenuItems.filter((item) => item.restaurant_id === restaurant.id);
     alert(`You clicked on: ${restaurant.name}`);
-  }
-
-  async function loadMenuItems(restaurantId: string): Promise<MenuItem[]> {
-    const { data, error } = await supabase
-      .from('menu_items')
-      .select('*')
-      .eq('restaurant_id', restaurantId);
-
-    if (error) throw error;
-    return data ?? [];
   }
 
   async function assignMasterAdminRole() {
@@ -138,24 +126,18 @@
       {#if selectedRestaurant}
         <section class="bg-white p-6 shadow rounded-xl max-w-4xl mt-10">
           <h2 class="text-xl font-semibold mb-4">Menu for {selectedRestaurant.name}</h2>
-          {#await menuItemsPromise}
-            <p>Loading menu...</p>
-          {:then menuItem}
-            {#if menuItem.length === 0}
-              <p>No menu items found.</p>
-            {:else}
-              <ul class="divide-y divide-gray-200">
-                {#each menuItem as item (item.id)}
-                  <li class="py-4">
-                    <p class="font-semibold">{item.name}</p>
-                    <p class="text-sm">Price: {item.price} DKK</p>
-                  </li>
-                {/each}
-              </ul>
-            {/if}
-          {:catch error}
-            <p class="text-red-500">Error: {error.message}</p>
-          {/await}
+          {#if selectedMenuItems.length === 0}
+            <p>No menu items found for this restaurant.</p>
+          {:else}
+            <ul class="divide-y divide-gray-200">
+              {#each selectedMenuItems as item (item.id)}
+                <li class="py-4">
+                  <p class="font-semibold">{item.name}</p>
+                  <p class="text-sm">Price: {item.price} DKK</p>
+                </li>
+              {/each}
+            </ul>
+          {/if}
         </section>
       {/if}
     </main>
