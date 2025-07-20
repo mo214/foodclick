@@ -13,7 +13,7 @@
   const allMenuItems = (data?.menuItems ?? []) as MenuItem[];
 
   let newRestaurantName = '';
-  let selectedRestaurant: Restaurant | null = null;
+  let selectedRestaurant: Restaurant []=[];
   let selectedMenuItems: MenuItem[] = [];
   let roleAssignmentMessage = '';
   let loading = false;
