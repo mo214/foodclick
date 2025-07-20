@@ -28,6 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: menuItems, error: menuItemsError } = await locals.supabase
 		.from('menu_items')
 		.select('*');
+		console.log('menuItems', menuItems);
 
 	if (menuItemsError) {
 		console.error('Error fetching menu items:', menuItemsError);
