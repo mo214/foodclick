@@ -34,6 +34,7 @@
 		"@supabase/auth-helpers-sveltekit": "^0.13.0",
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.51.0",
-		"@tailwindcss/vite": "^4.1.11"
+		"@tailwindcss/vite": "^4.1.11",
+		"jsonwebtoken": "^9.0.2"
 	}
 }
