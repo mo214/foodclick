@@ -34,6 +34,22 @@ export async function POST(event: RequestEvent) {
     return json({ error: 'Missing userId in request body' }, { status: 400 });
   }
 
+  // Update the master_admins table with required metadata
+  const { data: updateData, error: updateError } = await supabaseClient
+    .from('master_admins')
+    .upsert({
+      id: userId,
+      raw_user_meta_data: {
+        email_verified: true,
+        is_super_admin: true
+      }
+    }, { onConflict: 'id' });
+
+  if (updateError) {
+    console.error('Error updating master_admins:', updateError);
+    return json({ error: 'Failed to update admin role in database' }, { status: 500 });
+  }
+
   // Create a JWT token with "role": "master_admin" claim
   try {
     const token = jsonwebtoken.sign(
