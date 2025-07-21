@@ -4,13 +4,18 @@ import type { Handle } from '@sveltejs/kit';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
+  console.log('all incoming cookies:', event.cookies.getAll());
+  
   // 1) Create a Supabase client that DOESN'T persist to localStorage
   const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     auth: {
       persistSession: false,
       detectSessionInUrl: false
     }
+  
   });
+
+  
 
   // 2) Read tokens that your client already set
   const accessToken = event.cookies.get('sb-access-token');
