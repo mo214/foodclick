@@ -36,6 +36,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Find the restaurant with name "Test Restaurant"
 	const testRestaurant = restaurants?.find(r => r.name === "Test Restaurant");
+	console.log('Test Restaurant:', testRestaurant);
 
 	// Filter menu items related to "Test Restaurant"
 	const testRestaurantMenuItems = testRestaurant
