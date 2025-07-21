@@ -28,18 +28,25 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: menuItems, error: menuItemsError } = await locals.supabase
 		.from('menu_items')
 		.select('*');
-		console.log('menuItems', menuItems);
 
 	if (menuItemsError) {
 		console.error('Error fetching menu items:', menuItemsError);
 		throw svelteKitError(500, 'Failed to load menu items. You may not have the required permissions.');
 	}
-	
-	
-	// Make the restaurants and menu items data available to the +page.svelte component.
+
+	// Find the restaurant with name "Test Restaurant"
+	const testRestaurant = restaurants?.find(r => r.name === "Test Restaurant");
+
+	// Filter menu items related to "Test Restaurant"
+	const testRestaurantMenuItems = testRestaurant
+		? menuItems?.filter(item => item.restaurant_id === testRestaurant.id)
+		: [];
+
+	// Make the restaurants, all menu items, and test restaurant menu items available to the +page.svelte component.
 	return {
 		restaurants: restaurants ?? [],
 		menuItems: menuItems ?? [],
+		testRestaurantMenuItems,
 		user
 	};
 };
