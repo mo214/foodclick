@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: menuItems, error: menuItemsError } = await locals.supabase
 		.from('menu_items')
 		.select('*');
-
+console.log('Menu Items:', menuItems);
 	if (menuItemsError) {
 		console.error('Error fetching menu items:', menuItemsError);
 		throw svelteKitError(500, 'Failed to load menu items. You may not have the required permissions.');
