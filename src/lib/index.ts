@@ -14,4 +14,5 @@ export interface MenuItem {
   category: string;
   restaurant_id: string;
   created_at: string;
+  description: string;
 }
