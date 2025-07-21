@@ -1,6 +1,4 @@
-
 import { json, error as svelteKitError } from '@sveltejs/kit';
-import jsonwebtoken from 'jsonwebtoken';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 
@@ -9,24 +7,30 @@ const SUPABASE_URL = process.env.SUPABASE_URL!;
 
 export async function POST(event: RequestEvent) {
   // Create supabase client with event
-  const supabaseClient = createSupabaseServerClient({ supabaseUrl: SUPABASE_URL, supabaseKey: SUPABASE_JWT_SECRET, event });
+  const supabase = createSupabaseServerClient({
+    supabaseUrl: SUPABASE_URL,
+    supabaseKey: SUPABASE_JWT_SECRET,
+    event
+  });
 
-  // Get user session
+  // Get current session
   const {
-    data: { session }
-  } = await supabaseClient.auth.getSession();
+    data: { session },
+    error: sessionError
+  } = await supabase.auth.getSession();
 
   if (!session || !session.user) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Optionally: Only allow certain emails or user IDs to assign admin role
-  // For example, restrict to your own email
-  if (session.user.email !== 'mohammed_500@outloo.dk') {
-    return json({ error: 'Forbidden: Not allowed to assign admin role' }, { status: 403 });
+  const userMeta = session.user.app_metadata;
+
+  // 🔐 Check if the user is a master admin or super admin
+  if (userMeta?.role !== 'master_admin' || !userMeta?.is_super_admin) {
+    return json({ error: 'Forbidden: You do not have permission' }, { status: 403 });
   }
 
-  // Get userId to assign from request body
+  // Parse request body
   const body = await event.request.json();
   const { userId } = body;
 
@@ -34,40 +38,24 @@ export async function POST(event: RequestEvent) {
     return json({ error: 'Missing userId in request body' }, { status: 400 });
   }
 
-  // Update the master_admins table with required metadata
-  const { data: updateData, error: updateError } = await supabaseClient
+  // Assign master admin by upserting to master_admins table
+  const { error: updateError } = await supabase
     .from('master_admins')
-    .upsert({
-      id: userId,
-      raw_user_meta_data: {
-        email_verified: true,
-        is_super_admin: true
-      }
-    }, { onConflict: 'id' });
+    .upsert(
+      {
+        id: userId,
+        raw_app_meta_data: {
+          role: 'master_admin',
+          is_super_admin: true
+        }
+      },
+      { onConflict: 'id' }
+    );
 
   if (updateError) {
     console.error('Error updating master_admins:', updateError);
     return json({ error: 'Failed to update admin role in database' }, { status: 500 });
   }
 
-  // Create a JWT token with "role": "master_admin" claim
-  try {
-    const token = jsonwebtoken.sign(
-      {
-        role: 'master_admin',
-        sub: userId,
-        customClaimKey: 'customClaimValue'  // Example of adding a custom claim
-      },
-      SUPABASE_JWT_SECRET,
-      {
-        expiresIn: '1h',
-        issuer: SUPABASE_URL,
-      }
-    );
-
-    return json({ message: `Master admin role assigned to user ${userId}`, token });
-  } catch (err) {
-    console.error('Error signing JWT:', err);
-    throw svelteKitError(500, 'Internal Server Error');
-  }
+  return json({ message: `Master admin role assigned to user ${userId}` });
 }
