@@ -13,8 +13,6 @@
   const allMenuItems = (data?.menuItems ?? []) as MenuItem[];
 
   let newRestaurantName = '';
-  let selectedRestaurant: Restaurant | null = null;
-  let selectedMenuItems: MenuItem[] = [];
   let roleAssignmentMessage = '';
   let loading = false;
 
@@ -48,18 +46,8 @@
       .eq('id', id);
 
     if (!error) {
-      if (selectedRestaurant?.id === id) {
-        selectedRestaurant = null;
-        selectedMenuItems = [];
-      }
       await invalidateAll();
     }
-  }
-
-  function selectRestaurant(restaurant: Restaurant) {
-    selectedRestaurant = restaurant;
-    selectedMenuItems = allMenuItems.filter((item) => item.restaurant_id === restaurant.id);
-    alert(`You clicked on: ${restaurant.name}`);
   }
 
   async function assignMasterAdminRole() {
@@ -77,11 +65,6 @@
       ? `${result.message} Please log out and log back in.`
       : `Failed: ${result.error}`;
   }
-
-
-
-
-
 </script>
 
 {#if data.user && isMasterAdmin}
@@ -118,7 +101,7 @@
             {#each restaurants as r (r.id)}
               <li class="py-4 flex justify-between">
                 <div>
-                  <button on:click={() => selectRestaurant(r)}>{r.name}</button>
+                  <p>{r.name}</p>
                   <p>ID: {r.id} | Created: {new Date(r.created_at).toLocaleString()}</p>
                 </div>
                 <button on:click={() => deleteRestaurant(r.id)} class="text-red-600">Delete</button>
@@ -127,27 +110,22 @@
           </ul>
         {/if}
       </section>
-     
-     
- 
 
-    {#if selectedRestaurant}
-        <section class="bg-white p-6 shadow rounded-xl max-w-4xl mt-10">
-          <h2 class="text-xl font-semibold mb-4">Menu for {selectedRestaurant.name}</h2>
-          {#if selectedMenuItems.length === 0}
-            <p>No menu items found for this restaurant.</p>
-          {:else}
-            <ul class="divide-y divide-gray-200">
-              {#each selectedMenuItems as item (item.id)}
-                <li class="py-4">
-                  <p class="font-semibold">{item.name}</p>
-                  <p class="text-sm">Price: {item.price} DKK</p>
-                </li>
-              {/each}
-            </ul>
-          {/if}
-        </section>
-      {/if}
+      <section class="bg-white p-6 shadow rounded-xl max-w-4xl mt-10">
+        <h2 class="text-xl font-semibold mb-4">All Menu Items</h2>
+        {#if allMenuItems.length === 0}
+          <p>No menu items found.</p>
+        {:else}
+          <ul class="divide-y divide-gray-200">
+            {#each allMenuItems as item (item.id)}
+              <li class="py-4">
+                <p class="font-semibold">{item.name}</p>
+                <p class="text-sm">Price: {item.price} DKK</p>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </section>
     </main>
   </div>
 {:else}
