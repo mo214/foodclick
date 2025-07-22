@@ -3,7 +3,7 @@ import { type Handle } from '@sveltejs/kit'
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public'
 
 const supabase: Handle = async ({ event, resolve }) => {
- console.log('all incoming cookies:', event.cookies.getAll());
+
 
    /**
    * Creates a Supabase client specific to this server request.
